@@ -43,7 +43,7 @@ const updateUser = async (req, res) => {
     } catch (e) {
       res.status(500).send({
         status: "failure",
-        message: "something is wrong !",
+        message: e.message,
       });
     }
   } else {
@@ -247,7 +247,7 @@ const searchUsers = async (req, res) => {
   }
 };
 module.exports = {
-  deleteUser,
+  //deleteUser,
   updateUser,
   getUser,
   getFollowings,

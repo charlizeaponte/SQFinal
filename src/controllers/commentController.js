@@ -32,10 +32,13 @@ const getbyPostId = async (req, res) => {
       status: "success",
       comments: article.comment,
     });
+    /* Change e.message to error.message . 
+    Fixes issue: Handle this exception or don't catch it at all.. (https://sonarcloud.io/project/issues?open=AZaZzF5rxttRV5zrRk8u&id=charlizeaponte_SQFinal)
+     */
   } catch (error) {
     res.status(500).send({
       status: "failure",
-      message: e.message,
+      message: error.message,
     });
   }
 };

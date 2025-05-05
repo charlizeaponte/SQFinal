@@ -87,8 +87,11 @@ const getTimeline = async (req, res) => {
           .sort({ createdAt: "desc" })
           .populate("user", "username profilePicture");
       })
-    );
-    arr = myArticles.concat(...followingsArticles);
+    ); 
+    /* added let to arr to make it explicit. 
+    Fixes issue: Add the "let", "const" or "var" keyword to this declaration of "arr" to make it explicit. (https://sonarcloud.io/project/issues?open=AZaZzF3zxttRV5zrRk8r&id=charlizeaponte_SQFinal)
+     */
+     let arr = myArticles.concat(...followingsArticles);
     res.status(200).send({
       status: "success",
       Articles: arr,
@@ -142,10 +145,13 @@ const likeUnlike = async (req, res) => {
         message: "the article has been disliked",
       });
     }
+ /* Change e.message to error.message . 
+    Fixes issue: Handle this exception or don't catch it at all.. (https://sonarcloud.io/project/issues?open=AZaZzF3zxttRV5zrRk8s&id=charlizeaponte_SQFinal)
+     */
   } catch (error) {
     res.status(500).send({
       status: "failure",
-      message: e.message,
+      message: error.message,
     });
   }
 };

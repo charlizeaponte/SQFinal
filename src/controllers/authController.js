@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const User = require("../Models/userModel");
 const jwt = require("jsonwebtoken");
 const generateToken = require("../utils/generateToken");
+require('dotenv').config(); 
 
 const signup = async (req, res) => {
   try {
@@ -14,7 +15,11 @@ const signup = async (req, res) => {
       password: hashedPassword,
       email: email,
     });
-    const saveuser = await createduser.save();
+    /*Remove the saveuser variable
+     fixed issue: Remove the declaration of the unused 'saveuser' variable. (https://sonarcloud.io/project/issues?open=AZaZzF5yxttRV5zrRk8x&id=charlizeaponte_SQFinal)
+     and Remove this useless assignment to variable "saveuser" (https://sonarcloud.io/project/issues?open=AZaZzF5yxttRV5zrRk8y&id=charlizeaponte_SQFinal)
+    */
+    await createduser.save();
     res.status(200).send({
       status: "success",
       message: "user saved successfully",
@@ -51,7 +56,10 @@ const login = async (req, res) => {
     await User.findByIdAndUpdate(user._id, {
       jwtToken: refreshToken,
     });
-    const { jwtToken, password: newpass, ...other } = user._doc;
+    /* Removed newpass 
+    Fixed Issue : Remove the declaration of the unused 'newpass' variable. (https://sonarcloud.io/project/issues?open=AZaZzF5yxttRV5zrRk8z&id=charlizeaponte_SQFinal)
+     */
+    const { jwtToken, ...other } = user._doc;
     res.status(200).send({
       status: "success",
       message: "logged in successfully",
@@ -98,7 +106,7 @@ const verify = async (req, res, next) => {
   const token = authHeader.split(" ")[1];
   try {
     if (authHeader) {
-      jwt.verify(token, "YOUR_SECRET_KEY", (err, user) => {
+      jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
         if (err) {
           throw new Error("token is not valid!");
         }
@@ -134,7 +142,7 @@ const refresh = async (req, res) => {
     }
     jwt.verify(
       refreshToken,
-      "YOUR_SECRETKEY_REFRESHTOKEN",
+      process.env.JWT_REFRESH_SECRET,
       async (err, user) => {
         if (err) {
           throw new Error("token is not valid!");
