@@ -20,7 +20,7 @@ Fixed issue: Change this code to not reflect user-controlled data (https://sonar
 app.use("/", (req, res) => {
   const method = req.method;
   const path = req.path;
-  const message = `${method} Route ${path} not found !`;d
+  const message = `${method} Route ${path} not found !`;
   res.status(404).send(message); 
 });
 app.listen(PORT, () => {
