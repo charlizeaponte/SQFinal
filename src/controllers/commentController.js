@@ -7,9 +7,13 @@ const addComment = async (req, res) => {
     comment.user = req.user._id;
     const commenttosave = new Comment(comment);
     const savedcomment = await commenttosave.save();
+    /**
+     * Fixed Issue: Change this code to not construct database queries directly from user-controlled data (https://sonarcloud.io/project/issues?open=AZaZzF5rxttRV5zrRk8v&id=charlizeaponte_SQFinal)
+     */
     await Article.findOneAndUpdate(
-      { _id: articleId },
-      { $push: { comment: savedcomment._id } }
+      { _id: mongoose.Types.ObjectId(articleId) },  
+      { $push: { comments: savedcomment._id } },   
+      { runValidators: true }                      
     );
     res.status(200).send({
       status: "success",
