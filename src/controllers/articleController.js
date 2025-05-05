@@ -18,25 +18,39 @@ const createArticle = async (req, res) => {
     });
   }
 };
+/* Made the method safer and not injecting data into html
+Fixed issue:Change this code to not construct database queries directly from user-controlled data. (https://sonarcloud.io/project/issues?open=AZaZzF3zxttRV5zrRk8t&id=charlizeaponte_SQFinal)
+ */
 const updateArticle = async (req, res) => {
   try {
     const article = await Article.findById(req.params.id);
-    if (req.user._id === article.user.toString()) {
-      await Article.updateOne({ $set: req.body });
-      res.status(200).send({
-        status: "success",
-        message: "article has been updated",
-      });
-    } else {
-      res.status(401).send({
+
+    if (req.user._id !== article.user.toString()) {
+      return res.status(401).send({
         status: "failure",
         message: "you are not authorized",
       });
     }
-  } catch (e) {
+
+    const allowedUpdates = {};
+    const fields = ["description", "imgurl"]; 
+    fields.forEach((field) => {
+      if (req.body[field]) {
+        allowedUpdates[field] = req.body[field];
+      }
+    });
+
+    await Article.updateOne({ _id: req.params.id }, { $set: allowedUpdates });
+
+    res.status(200).send({
+      status: "success",
+      message: "article has been updated",
+    });
+
+  } catch (error) {
     res.status(500).send({
       status: "failure",
-      message: e.message,
+      message: error.message,
     });
   }
 };
