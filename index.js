@@ -17,11 +17,20 @@ app.use("/api/comment", commentRoute);
 /* Made the method safer and not injecting data into html
 Fixed issue: Change this code to not reflect user-controlled data (https://sonarcloud.io/project/issues?open=AZaZzF54xttRV5zrRk88&id=charlizeaponte_SQFinal)
  */
+const escapeHTML = (str) => {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+};
+
 app.use("/", (req, res) => {
   const method = req.method;
-  const path = req.path;
+  const path = escapeHTML(req.path); 
   const message = `${method} Route ${path} not found !`;
-  res.status(404).send(message); 
+  res.status(404).send(message);
 });
 app.listen(PORT, () => {
   console.log(`server run on port ${PORT} ✅`);
