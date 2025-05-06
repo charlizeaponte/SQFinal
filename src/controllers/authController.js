@@ -40,7 +40,9 @@ const login = async (req, res) => {
      /*
      fixed issue: Change this code to not construct database queries directly from user-controlled data. (https://sonarcloud.io/project/issues?open=AZaZzF5yxttRV5zrRk82&id=charlizeaponte_SQFinal)
     */
-    const user = await User.findOne({ username: { $eq: username } });
+     const cleanUsername = String(username).trim();
+     const user = await User.findOne({ username: cleanUsername });
+     
     if (!user) {
       return res.status(401).send({
         status: "failure",
@@ -84,7 +86,9 @@ const logout = async (req, res) => {
       /*Fixed Issue: Change this code to not construct database queries directly from user-controlled data.
 (https://sonarcloud.io/project/issues?open=AZaZzF5yxttRV5zrRk80&id=charlizeaponte_SQFinal)
       */ 
-      await User.updateOne({ jwtToken: refreshToken }, { $unset: ["jwtToken"] }); 
+      const token = String(refreshToken).trim();
+      await User.updateOne({ jwtToken: token }, { $unset: { jwtToken: "" } });
+
       res.status(200).send({
         status: "success",
         message: "You've been logged out",
