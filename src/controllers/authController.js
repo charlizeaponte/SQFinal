@@ -140,9 +140,10 @@ const refresh = async (req, res) => {
   try {
     /*Fixed Issue: Change this code to not construct database queries directly from user-controlled data. (https://sonarcloud.io/project/issues?open=AZaZzF5yxttRV5zrRk81&id=charlizeaponte_SQFinal)
     */
-    const token = await User.findOne(       
-      { jwtToken: refreshToken },
-      { jwtToken: true }
+    const cleanToken = String(refreshToken).trim();
+    const token = await User.findOne(
+      { jwtToken: cleanToken },
+      { jwtToken: 1 }
     );
     if (!token) {
       res.status(200).send({
