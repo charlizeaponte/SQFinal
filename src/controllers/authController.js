@@ -28,6 +28,7 @@ const signup = async (req, res) => {
       },
     });
   } catch (e) {
+    
     res.status(500).send({
       status: "failure",
       message: e.message,
@@ -43,7 +44,7 @@ const login = async (req, res) => {
      const cleanUsername = String(username).trim();
      const user = await User.findOne({ username: cleanUsername });
      
-    if (!user) {
+    if (!user) { //test
       return res.status(401).send({
         status: "failure",
         message: "user does not exist",
@@ -55,7 +56,7 @@ const login = async (req, res) => {
         status: "failure",
         message: "password is incorrect",
       });
-    }
+    } 
     const accessToken = generateToken.generateAccessToken(user);
     const refreshToken = generateToken.generateRefreshToken(user);
     await User.findByIdAndUpdate(user._id, {
@@ -71,7 +72,7 @@ const login = async (req, res) => {
       data: other,
       accessToken,
       refreshToken,
-    });
+    }); 
   } catch (e) {
     res.status(500).send({
       status: "failure",
@@ -79,7 +80,7 @@ const login = async (req, res) => {
     });
   }
 };
-const logout = async (req, res) => {
+const logout = async (req, res) => { 
   try {
     const { refreshToken } = req.body;
     if (refreshToken) {
@@ -99,7 +100,7 @@ const logout = async (req, res) => {
         message: "logout error",
       });
     }
-  } catch (e) {
+  } catch (e) { 
     res.status(500).send({
       status: "failure",
       message: e.message,
@@ -109,9 +110,9 @@ const logout = async (req, res) => {
 const verify = async (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (!authHeader) {
-    res.status(403).json("You are not authorized");
+    return res.status(403).json("You are not authorized");
   }
-  const token = authHeader.split(" ")[1];
+  const token = authHeader.split(" ")[1];  
   try {
     if (authHeader) {
       jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
@@ -129,10 +130,11 @@ const verify = async (req, res, next) => {
     });
   }
 };
+
 const refresh = async (req, res) => {
   const refreshToken = req.body.token;
   if (!refreshToken) {
-    res.status(401).send({
+    return res.status(401).send({
       status: "failure",
       message: "You are not authenticated!",
     });
@@ -141,35 +143,25 @@ const refresh = async (req, res) => {
     /*Fixed Issue: Change this code to not construct database queries directly from user-controlled data. (https://sonarcloud.io/project/issues?open=AZaZzF5yxttRV5zrRk81&id=charlizeaponte_SQFinal)
     */
     const cleanToken = String(refreshToken).trim();
-    const token = await User.findOne(
-      { jwtToken: cleanToken },
-      { jwtToken: 1 }
-    );
+    const token = await User.findOne({ jwtToken: cleanToken }, { jwtToken: 1 });
     if (!token) {
-      res.status(200).send({
+      return res.status(200).send({
         status: "failure",
         message: "Refresh token is not valid!",
       });
     }
-    jwt.verify(
-      refreshToken,
-      process.env.JWT_REFRESH_SECRET,
-      async (err, user) => {
-        if (err) {
-          throw new Error("token is not valid!");
-        }
-        const newAccessToken = generateToken.generateAccessToken(user);
-        const newRefreshToken = generateToken.generateRefreshToken(user);
-        await User.updateOne(
-          { jwtToken: refreshToken },
-          { $set: { jwtToken: newRefreshToken } }
-        );
-        res.status(200).json({
-          accessToken: newAccessToken,
-          refreshToken: newRefreshToken,
-        });
+    jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, async (err, user) => {
+      if (err) {
+        throw new Error("token is not valid!");
       }
-    );
+      const newAccessToken = generateToken.generateAccessToken(user);
+      const newRefreshToken = generateToken.generateRefreshToken(user);
+      await User.updateOne({ jwtToken: refreshToken }, { $set: { jwtToken: newRefreshToken } });
+      return res.status(200).json({
+        accessToken: newAccessToken,
+        refreshToken: newRefreshToken,
+      });
+    });
   } catch (e) {
     res.status(500).send({
       status: "failure",
