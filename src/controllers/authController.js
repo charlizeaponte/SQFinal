@@ -40,7 +40,7 @@ const login = async (req, res) => {
      /*
      fixed issue: Change this code to not construct database queries directly from user-controlled data. (https://sonarcloud.io/project/issues?open=AZaZzF5yxttRV5zrRk82&id=charlizeaponte_SQFinal)
     */
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ username: { $eq: username } });
     if (!user) {
       return res.status(401).send({
         status: "failure",
