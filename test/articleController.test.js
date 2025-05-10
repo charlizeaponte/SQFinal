@@ -89,7 +89,6 @@ describe("articleController Test", () => {
     // arrange
     const article = await Article.create({
       user: validUser._id,
-      title: "Old Title",
       description: "Old description",
       imgurl: "http://old.com/img.jpg",
     });
@@ -119,7 +118,6 @@ describe("articleController Test", () => {
     // arrange
     const article = await Article.create({
       user: validUser._id,
-      title: "Delete Me",
       description: "To be deleted",
     });
 
@@ -164,58 +162,72 @@ describe("articleController Test", () => {
       Articles: expect.any(Array),
     }));
   });
-
+  
   test("TC-05: Get articles by user", async () => {
     // arrange
     const article = await Article.create({
       user: validUser._id,
-      title: "By User",
       description: "By user desc",
     });
-
+  
     const req = { params: { username: validUser.username } };
     const res = createMockRes();
-
+  
     // act
     await getArticlesUser(req, res);
-
+  
     // assert
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(expect.arrayContaining([
-      expect.objectContaining({
-        title: "By User",
-        description: "By user desc",
-      }),
-    ]));
+    expect(res.json).toHaveBeenCalledWith(
+      expect.arrayContaining([
+        expect.objectContaining({
+          __v: 0,
+          _id: article._id,
+          comment: [],
+          createdAt: article.createdAt,
+          description: "By user desc",
+          likes: [],
+          updatedAt: article.updatedAt,
+          user: validUser._id,
+        }),
+      ])
+    );
   });
 
   test("TC-06: Get article by ID", async () => {
     // arrange
     const article = await Article.create({
       user: validUser._id,
-      title: "Find Me",
       description: "Find me desc",
     });
-
+  
     const req = { params: { id: article._id.toString() } };
     const res = createMockRes();
-
+  
     // act
     await getArticle(req, res);
-
+  
     // assert
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
-      title: "Find Me",
-      description: "Find me desc",
-    }));
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        __v: 0,
+        _id: article._id,
+        comment: [],
+        createdAt: article.createdAt,
+        description: "Find me desc",
+        likes: [],
+        updatedAt: article.updatedAt,
+        user: validUser._id,
+      })
+    );
   });
+  
 
   test("TC-07: Like and Unlike article", async () => {
     // arrange
     const article = await Article.create({
       user: validUser._id,
-      title: "Like Me",
       description: "Like me desc",
     });
 
@@ -224,13 +236,15 @@ describe("articleController Test", () => {
 
     // act
     await likeUnlike(req, res);
+    // assert
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.send).toHaveBeenCalledWith({
       status: "success",
       message: "the article has been liked",
     });
-
+    // act
     await likeUnlike(req, res);
+    // assert
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.send).toHaveBeenCalledWith({
       status: "success",
@@ -241,13 +255,12 @@ describe("articleController Test", () => {
   test("TC-08: Update article - unauthorized user", async () => {
     // arrange
     const article = await Article.create({
-      user: new mongoose.Types.ObjectId(), // someone else
-      title: "Unauthorized Update",
+      user: new mongoose.Types.ObjectId(), 
       description: "You shouldn't touch this",
     });
 
     const req = {
-      user: { _id: validUser._id.toString() }, // not the article owner
+      user: { _id: validUser._id.toString() }, 
       params: { id: article._id.toString() },
       body: { description: "Hacked" },
     };
@@ -268,7 +281,6 @@ describe("articleController Test", () => {
     // arrange
     const article = await Article.create({
       user: validUser._id,
-      title: "Error Case",
       description: "Error expected",
     });
 

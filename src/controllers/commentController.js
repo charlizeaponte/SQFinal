@@ -1,5 +1,6 @@
 const Comment = require("../Models/commentModel");
 const Article = require("../Models/articleModel");
+const mongoose = require("mongoose");
 
 const addComment = async (req, res) => {
   try {

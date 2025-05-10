@@ -17,7 +17,7 @@ describe('userRouter Tests', () => {
   let res;
 
   beforeAll(async () => {
-    // Start in-memory MongoDB server and connect mongoose
+    // Start MongoDB server and connect mongoose
     mongoServer = await MongoMemoryServer.create();
     await mongoose.connect(mongoServer.getUri(), {
       useNewUrlParser: true,
@@ -45,7 +45,7 @@ describe('userRouter Tests', () => {
 
   beforeEach(() => {
     // Mock request and response objects before each test
-    req = {}; // Populate this with any necessary request data
+    req = {};
     res = {
       status: jest.fn().mockReturnThis(),
       send: jest.fn(),
@@ -54,7 +54,7 @@ describe('userRouter Tests', () => {
   });
 
   afterAll(async () => {
-    // Disconnect mongoose and stop in-memory MongoDB server
+    // Disconnect mongoose and stop MongoDB server
     await mongoose.disconnect();
     await mongoServer.stop();
   });
@@ -128,7 +128,7 @@ describe('userRouter Tests', () => {
     req = { params: { id: "some-user-id" }, body: validUser };
     await userController.updateUser(req, res);
 
-    // Assert 
+    //assert 
     expect(updateUserMock).toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({ message: "User updated successfully" });

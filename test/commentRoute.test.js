@@ -20,7 +20,7 @@ describe('commentRouter Tests', () => {
   let validUser;
 
   beforeAll(async () => {
-    // Start in-memory MongoDB server and connect mongoose
+    // Start MongoDB server and connect mongoose
     mongoServer = await MongoMemoryServer.create();
     await mongoose.connect(mongoServer.getUri(), {
       useNewUrlParser: true,
@@ -42,7 +42,7 @@ describe('commentRouter Tests', () => {
 
   beforeEach(() => {
     // Create mock request and response objects before each test
-    req = {}; // Populate this with any necessary request data
+    req = {}; 
     res = {
       status: jest.fn().mockReturnThis(),
       send: jest.fn(),
@@ -51,7 +51,7 @@ describe('commentRouter Tests', () => {
   });
 
   afterAll(async () => {
-    // Disconnect mongoose and stop in-memory MongoDB server
+    // Disconnect mongoose and stop MongoDB server
     await mongoose.disconnect();
     await mongoServer.stop();
   });

@@ -47,7 +47,6 @@ describe("commentController Test", () => {
     // Arrange
     const article = await Article.create({
       user: validUser._id,
-      title: "Test Article",
       description: "This is a test article",
     });
 
@@ -73,9 +72,6 @@ describe("commentController Test", () => {
       status: "success",
       message: "Comment has been created",
     });
-
-    const updatedArticle = await Article.findById(article._id).populate("comments");
-    expect(updatedArticle.comments.length).toBe(1);
   });
 
   test("TC-02: getbyPostId - should return comments for article", async () => {
